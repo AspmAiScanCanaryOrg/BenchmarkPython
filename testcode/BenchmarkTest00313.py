@@ -48,17 +48,23 @@ def init(app):
 		user = f'SafeTruman{num}'
 		cookie = f'rememberMe{num}'
 		value = secrets.token_urlsafe(32)
+		issued_tokens = mysession.get(cookie)
+		if not isinstance(issued_tokens, set):
+			issued_tokens = set()
+			legacy_token = mysession.get(cookie)
+			if isinstance(legacy_token, str) and legacy_token:
+				issued_tokens.add(legacy_token)
+			mysession[cookie] = issued_tokens
 
-		if cookie in mysession and request.cookies.get(cookie) == mysession[cookie]:
+		if request.cookies.get(cookie) in issued_tokens:
 			RESPONSE += (
 				f'Welcome back: {user}<br/>'
 			)
 		else:
-			mysession[cookie] = value
+			issued_tokens.add(value)
 			RESPONSE += (
 				f'{user} has been remembered with cookie:'
-				f'{cookie} whose value is: {mysession[cookie]}<br/>'
+				f'{cookie} whose value is: {value}<br/>'
 			)
 
 		return RESPONSE
-
