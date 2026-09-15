@@ -15,6 +15,8 @@ PURPOSE. See the GNU General Public License for more details.
   Created: 2025
 '''
 
+import pathlib
+
 from flask import redirect, url_for, request, make_response, render_template
 from helpers.utils import escape_for_html
 
@@ -44,8 +46,14 @@ def init(app):
 
 		import helpers.utils
 
+		fd = None
+		base_dir = pathlib.Path(helpers.utils.TESTFILES_DIR).resolve()
+		target_path = (base_dir / bar).resolve()
+		fileName = str(target_path)
+
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			if target_path.parent != base_dir:
+				raise IOError('Invalid file path')
 			fd = open(fileName, 'wb')
 			RESPONSE += (
 				f'Now ready to write to file: {escape_for_html(fileName)}'
@@ -53,7 +61,7 @@ def init(app):
 		except IOError as e:
 			RESPONSE += (
 				f'Problem reading from file \'{escape_for_html(fileName)}\': '
-				f'{escape_for_html(e.strerror)}'
+				f'{escape_for_html(str(e))}'
 			)
 		finally:
 			try:
@@ -63,4 +71,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
