@@ -15,6 +15,8 @@ PURPOSE. See the GNU General Public License for more details.
   Created: 2025
 '''
 
+import os
+
 from flask import redirect, url_for, request, make_response, render_template
 from helpers.utils import escape_for_html
 
@@ -27,6 +29,8 @@ def init(app):
 	@app.route('/benchmark/pathtraver-00/BenchmarkTest00085', methods=['POST'])
 	def BenchmarkTest00085_post():
 		RESPONSE = ""
+		fd = None
+		fileName = ''
 
 		param = request.form.get("BenchmarkTest00085")
 		if not param:
@@ -41,7 +45,10 @@ def init(app):
 		import helpers.utils
 
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			base_dir = os.path.realpath(helpers.utils.TESTFILES_DIR)
+			fileName = os.path.realpath(os.path.join(base_dir, bar))
+			if os.path.commonpath([base_dir, fileName]) != base_dir:
+				raise IOError('Invalid file path')
 			fd = open(fileName, 'wb')
 			RESPONSE += (
 				f'Now ready to write to file: {escape_for_html(fileName)}'
@@ -59,4 +66,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
