@@ -15,6 +15,8 @@ PURPOSE. See the GNU General Public License for more details.
   Created: 2025
 '''
 
+import os
+
 from flask import redirect, url_for, request, make_response, render_template
 from helpers.utils import escape_for_html
 
@@ -40,18 +42,21 @@ def init(app):
 		bar = map8238['keyB-8238']
 
 		import helpers.utils
+		fileName = ''
 
-		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
-			with open(fileName, 'wb') as fd:
+		if not bar or bar in ('.', '..') or os.path.basename(bar) != bar:
+			RESPONSE += 'Invalid file name'
+		else:
+			try:
+				fileName = os.path.join(helpers.utils.TESTFILES_DIR, bar)
+				with open(fileName, 'wb') as fd:
+					RESPONSE += (
+						f'Now ready to write to file: {escape_for_html(fileName)}'
+					)
+			except IOError as e:
 				RESPONSE += (
-					f'Now ready to write to file: {escape_for_html(fileName)}'
+					f'Problem reading from file \'{escape_for_html(fileName)}\': '
+					f'{escape_for_html(e.strerror)}'
 				)
-		except IOError as e:
-			RESPONSE += (
-				f'Problem reading from file \'{escape_for_html(fileName)}\': '
-				f'{escape_for_html(e.strerror)}'
-			)
 
 		return RESPONSE
-
