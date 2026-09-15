@@ -1,0 +1,2 @@
+Test-only marker for autofix PR description validation (20260915-111241).
+No security fix is applied. Do not merge this PR.
