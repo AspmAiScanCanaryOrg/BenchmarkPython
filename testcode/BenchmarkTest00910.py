@@ -42,6 +42,7 @@ def init(app):
 		param = urllib.parse.unquote_plus(param)
 
 		import configparser
+		import pathlib
 		
 		bar = 'safe!'
 		conf1848 = configparser.ConfigParser()
@@ -56,7 +57,14 @@ def init(app):
 		fd = None
 
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			testfiles = pathlib.Path(helpers.utils.TESTFILES_DIR).resolve()
+			requested_path = (testfiles / bar).resolve()
+
+			if testfiles not in requested_path.parents and requested_path != testfiles:
+				RESPONSE += 'Problem reading from file: Invalid file path'
+				return RESPONSE
+
+			fileName = str(requested_path)
 			fd = open(fileName, 'rb')
 			RESPONSE += (
 				f'The beginning of file: \'{escape_for_html(fileName)}\' is:\n\n'
@@ -75,4 +83,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
