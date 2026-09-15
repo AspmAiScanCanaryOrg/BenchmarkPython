@@ -38,10 +38,17 @@ def init(app):
 		string84331 += 'snapes on a plane'
 		bar = string84331[4:-17]
 
+		import os
 		import helpers.utils
 
+		fileName = None
+		fd = None
+
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			base_dir = os.path.abspath(helpers.utils.TESTFILES_DIR)
+			fileName = os.path.abspath(os.path.join(base_dir, bar))
+			if os.path.commonpath([base_dir, fileName]) != base_dir:
+				raise IOError('Invalid file path')
 			fd = open(fileName, 'wb')
 			RESPONSE += (
 				f'Now ready to write to file: {escape_for_html(fileName)}'
@@ -59,4 +66,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
