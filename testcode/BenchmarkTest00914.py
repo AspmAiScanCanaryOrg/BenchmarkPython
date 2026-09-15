@@ -50,10 +50,17 @@ def init(app):
 		conf21073.set('section21073', 'keyB-21073', param)
 		bar = conf21073.get('section21073', 'keyB-21073')
 
+		import pathlib
 		import helpers.utils
 
+		fd = None
+		fileName = ''
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			testfiles = pathlib.Path(helpers.utils.TESTFILES_DIR).resolve()
+			candidate = (testfiles / bar).resolve()
+			if candidate.parent != testfiles:
+				raise IOError(0, 'Invalid file name')
+			fileName = str(candidate)
 			fd = open(fileName, 'wb')
 			RESPONSE += (
 				f'Now ready to write to file: {escape_for_html(fileName)}'
@@ -71,4 +78,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
