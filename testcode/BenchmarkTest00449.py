@@ -15,7 +15,7 @@ PURPOSE. See the GNU General Public License for more details.
   Created: 2025
 '''
 
-from flask import redirect, url_for, request, make_response, render_template
+from flask import abort, redirect, url_for, request, make_response, render_template
 from helpers.utils import escape_for_html
 
 def init(app):
@@ -27,6 +27,10 @@ def init(app):
 	@app.route('/benchmark/pathtraver-00/BenchmarkTest00449', methods=['POST'])
 	def BenchmarkTest00449_post():
 		RESPONSE = ""
+
+		expected_token = app.config.get("BENCHMARK_ADMIN_TOKEN")
+		if not expected_token or request.headers.get("X-Benchmark-Admin-Token") != expected_token:
+			abort(403)
 
 		param = request.headers.get("BenchmarkTest00449")
 		if not param:
@@ -49,4 +53,3 @@ def init(app):
 			)
 
 		return RESPONSE
-
