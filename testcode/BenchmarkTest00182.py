@@ -42,17 +42,19 @@ def init(app):
 		import helpers.utils
 
 		try:
-			testfiles = pathlib.Path(helpers.utils.TESTFILES_DIR)
-			p = testfiles / bar
+			testfiles = pathlib.Path(helpers.utils.TESTFILES_DIR).resolve()
+			p = (testfiles / bar).resolve()
+			p.relative_to(testfiles)
 			RESPONSE += (
 				f'The beginning of file: \'{escape_for_html(str(p))}\' is:\n\n'
 				f'{escape_for_html(p.read_text()[:1000])}'
 			)
-		except OSError:
+		except ValueError:
+			RESPONSE += 'Problem reading from file: invalid path'
+		except OSError as e:
 			RESPONSE += (
-				f'Problem reading from file \'{{escape_for_html(fileName)}}\': '
+				f'Problem reading from file \'{escape_for_html(bar)}\': '
 				f'{escape_for_html(e.strerror)}'
 			)
 
 		return RESPONSE
-
