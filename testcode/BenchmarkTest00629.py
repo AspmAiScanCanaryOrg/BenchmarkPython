@@ -44,23 +44,23 @@ def init(app):
 			bar = param
 
 		import secrets
-		from helpers.utils import mysession
+		import flask
 
 		num = 'BenchmarkTest00629'[13:]
 		user = f'SafeRobbie{num}'
 		cookie = f'rememberMe{num}'
+		session_key = f'{cookie}_value'
 		value = str(secrets.randbelow(2**32))
 
-		if cookie in mysession and request.cookies.get(cookie) == mysession[cookie]:
+		if session_key in flask.session and request.cookies.get(cookie) == flask.session[session_key]:
 			RESPONSE += (
 				f'Welcome back: {user}<br/>'
 			)
 		else:
-			mysession[cookie] = value
+			flask.session[session_key] = value
 			RESPONSE += (
 				f'{user} has been remembered with cookie:'
-				f'{cookie} whose value is: {mysession[cookie]}<br/>'
+				f'{cookie} whose value is: {flask.session[session_key]}<br/>'
 			)
 
 		return RESPONSE
-
