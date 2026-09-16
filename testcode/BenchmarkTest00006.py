@@ -48,15 +48,21 @@ def init(app):
 			bar = lst[0]
 
 		import helpers.utils
+		import pathlib
 
-		if '../' in bar:
+		testfiles = pathlib.Path(helpers.utils.TESTFILES_DIR).resolve()
+		file_path = (testfiles / bar).resolve()
+
+		if testfiles not in file_path.parents and file_path != testfiles:
 			RESPONSE += (
-				'File name must not contain \'../\''
+				'File name must stay within the test files directory'
 			)
 			return RESPONSE
 
+		fd = None
+		fileName = str(file_path)
+
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
 			fd = open(fileName, 'wb')
 			RESPONSE += (
 				f'Now ready to write to file: {escape_for_html(fileName)}'
@@ -74,4 +80,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
