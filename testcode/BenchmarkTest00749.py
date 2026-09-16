@@ -15,6 +15,8 @@ PURPOSE. See the GNU General Public License for more details.
   Created: 2025
 '''
 
+import os
+
 from flask import redirect, url_for, request, make_response, render_template
 from helpers.utils import escape_for_html
 
@@ -43,7 +45,10 @@ def init(app):
 		fd = None
 
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			base_dir = os.path.realpath(helpers.utils.TESTFILES_DIR)
+			fileName = os.path.realpath(os.path.join(base_dir, bar))
+			if os.path.commonpath([base_dir, fileName]) != base_dir:
+				raise IOError(1, 'Invalid file path')
 			with open(fileName, 'rb') as fd:
 				RESPONSE += (
 					f'The beginning of file: \'{escape_for_html(fileName)}\' is:\n\n'
@@ -56,4 +61,3 @@ def init(app):
 			)
 
 		return RESPONSE
-
