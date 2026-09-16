@@ -44,9 +44,26 @@ def init(app):
 			bar = lst[1]
 
 		import helpers.utils
+		import os
 
+		fd = None
+		fileName = ""
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			candidate = os.path.basename(bar)
+			if (
+				not candidate
+				or candidate != bar
+				or os.path.isabs(bar)
+				or '/' in bar
+				or '\\' in bar
+			):
+				raise IOError('Invalid filename')
+
+			base_dir = os.path.realpath(helpers.utils.TESTFILES_DIR)
+			fileName = os.path.realpath(os.path.join(base_dir, candidate))
+			if os.path.commonpath([base_dir, fileName]) != base_dir:
+				raise IOError('Invalid filename')
+
 			fd = open(fileName, 'wb')
 			RESPONSE += (
 				f'Now ready to write to file: {escape_for_html(fileName)}'
@@ -64,4 +81,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
