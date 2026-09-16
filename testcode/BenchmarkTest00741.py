@@ -17,6 +17,7 @@ PURPOSE. See the GNU General Public License for more details.
 
 from flask import redirect, url_for, request, make_response, render_template
 from helpers.utils import escape_for_html
+from pathlib import Path
 
 def init(app):
 
@@ -39,8 +40,13 @@ def init(app):
 
 		import helpers.utils
 
+		fd = None
+		fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			base_dir = Path(helpers.utils.TESTFILES_DIR).resolve()
+			candidate = (base_dir / bar).resolve()
+			candidate.relative_to(base_dir)
+			fileName = str(candidate)
 			fd = open(fileName, 'wb')
 			RESPONSE += (
 				f'Now ready to write to file: {escape_for_html(fileName)}'
@@ -58,4 +64,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
