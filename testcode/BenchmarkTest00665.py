@@ -38,23 +38,27 @@ def init(app):
 		map59129['keyC'] = 'another-Value'
 		bar = map59129['keyB-59129']
 
+		import os
 		import helpers.utils
 
 		fileName = None
 		fd = None
+		base_dir = os.path.realpath(helpers.utils.TESTFILES_DIR)
 
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			fileName = os.path.realpath(os.path.join(base_dir, bar))
+			if os.path.commonpath([base_dir, fileName]) != base_dir:
+				raise IOError('Invalid file path')
+
 			with open(fileName, 'rb') as fd:
 				RESPONSE += (
-					f'The beginning of file: \'{escape_for_html(fileName)}\' is:\n\n'
+					f'The beginning of file: \'{escape_for_html(os.path.relpath(fileName, base_dir))}\' is:\n\n'
 					f'{escape_for_html(fd.read(1000).decode('utf-8'))}'
 				)
 		except IOError as e:
 			RESPONSE += (
-				f'Problem reading from file \'{{escape_for_html(fileName)}}\': '
-				f'{escape_for_html(e.strerror)}'
+				f'Problem reading from file \'{escape_for_html(fileName if fileName else bar)}\': '
+				f'{escape_for_html(e.strerror if e.strerror else str(e))}'
 			)
 
 		return RESPONSE
-
