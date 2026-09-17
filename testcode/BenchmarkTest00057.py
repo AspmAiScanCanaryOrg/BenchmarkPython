@@ -26,6 +26,7 @@ def init(app):
 		response.set_cookie('BenchmarkTest00057', 'someSecret',
 			max_age=60*3,
 			secure=True,
+			httponly=True,
 			path=request.path,
 			domain='localhost')
 		return response
@@ -74,4 +75,3 @@ def init(app):
 		f.close()
 
 		return RESPONSE
-
