@@ -35,9 +35,16 @@ def init(app):
 		bar = param
 
 		import helpers.utils
+		import os
 
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			base_dir = os.path.realpath(helpers.utils.TESTFILES_DIR)
+			safe_name = os.path.basename(bar)
+			if safe_name != bar or safe_name in ('', '.', '..'):
+				raise IOError('Invalid file name')
+			fileName = os.path.realpath(os.path.join(base_dir, safe_name))
+			if os.path.commonpath([base_dir, fileName]) != base_dir:
+				raise IOError('Invalid file path')
 			with open(fileName, 'wb') as fd:
 				RESPONSE += (
 					f'Now ready to write to file: {escape_for_html(fileName)}'
@@ -49,4 +56,3 @@ def init(app):
 			)
 
 		return RESPONSE
-
