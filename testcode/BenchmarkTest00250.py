@@ -64,9 +64,8 @@ def init(app):
 		f = open(f'{helpers.utils.TESTFILES_DIR}/passwordFile.txt', 'a')
 		f.write(f'hash_value={base64.b64encode(result)}\n')
 		RESPONSE += (
-			f'Sensitive value \'{helpers.utils.escape_for_html(input.decode('utf-8'))}\' hashed and stored.'
+			'Sensitive value hashed and stored.'
 		)
 		f.close()
 
 		return RESPONSE
-
