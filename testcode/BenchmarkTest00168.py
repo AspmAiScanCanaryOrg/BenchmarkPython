@@ -45,19 +45,17 @@ def init(app):
 			case _:
 				bar = 'bob\'s your uncle'
 
-		import platform
 		import subprocess
+		import sys
 		import helpers.utils
 
-		argStr = ""
-		if platform.system() == "Windows":
-			argStr = "cmd.exe /c "
-		else:
-			argStr = "sh -c "
-		argStr += f"echo {bar}"
-
 		try:
-			proc = subprocess.run(argStr, shell=True, capture_output=True, encoding="utf-8")
+			proc = subprocess.run(
+				[sys.executable, "-c", "import sys; print(sys.argv[1])", bar],
+				shell=False,
+				capture_output=True,
+				encoding="utf-8",
+			)
 
 			RESPONSE += (
 				helpers.utils.commandOutput(proc)
@@ -68,4 +66,3 @@ def init(app):
 			)
 
 		return RESPONSE
-
