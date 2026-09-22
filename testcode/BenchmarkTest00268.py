@@ -39,18 +39,11 @@ def init(app):
 		else:
 			bar = param
 
-		import os
 		import subprocess
+		import sys
 		import helpers.utils
 
-		argList = []
-		if "Windows" in os.name:
-			argList.append("cmd.exe")
-			argList.append("-c")
-		else:
-			argList.append("sh")
-			argList.append("-c")
-		argList.append(f"echo {bar}")
+		argList = [sys.executable, "-c", "import sys; print(sys.argv[1])", bar]
 
 		proc = subprocess.run(argList, capture_output=True, encoding="utf-8")
 		RESPONSE += (
@@ -58,4 +51,3 @@ def init(app):
 		)
 
 		return RESPONSE
-
