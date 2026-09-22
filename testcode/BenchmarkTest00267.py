@@ -39,23 +39,6 @@ def init(app):
 		map12501['keyC'] = 'another-Value'
 		bar = map12501['keyB-12501']
 
-		import os
-		import subprocess
-		import helpers.utils
-
-		argList = []
-		if "Windows" in os.name:
-			argList.append("cmd.exe")
-			argList.append("-c")
-		else:
-			argList.append("sh")
-			argList.append("-c")
-		argList.append(f"echo {bar}")
-
-		proc = subprocess.run(argList, capture_output=True, encoding="utf-8")
-		RESPONSE += (
-			helpers.utils.commandOutput(proc)
-		)
+		RESPONSE += f"{escape_for_html(bar)}\n"
 
 		return RESPONSE
-
