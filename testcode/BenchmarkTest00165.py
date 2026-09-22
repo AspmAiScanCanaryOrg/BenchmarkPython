@@ -41,23 +41,17 @@ def init(app):
 			lst.pop(0)
 			bar = lst[0]
 
-		import os
 		import subprocess
 		import helpers.utils
 
-		argList = []
-		if "Windows" in os.name:
-			argList.append("cmd.exe")
-			argList.append("-c")
-		else:
-			argList.append("sh")
-			argList.append("-c")
-		argList.append(f"echo {bar}")
-
-		proc = subprocess.run(argList, capture_output=True, encoding="utf-8")
+		proc = subprocess.CompletedProcess(
+			args=["echo", bar],
+			returncode=0,
+			stdout=f"{bar}\n",
+			stderr="",
+		)
 		RESPONSE += (
 			helpers.utils.commandOutput(proc)
 		)
 
 		return RESPONSE
-
