@@ -47,12 +47,24 @@ def init(app):
 		bar = string53978[4:-17]
 
 		import helpers.utils
+		from pathlib import Path
+
+		fd = None
+		base_dir = Path(helpers.utils.TESTFILES_DIR).resolve()
+		fileName = str(base_dir / bar)
 
 		try:
-			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
+			candidate = (base_dir / bar).resolve()
+			candidate.relative_to(base_dir)
+
+			fileName = str(candidate)
 			fd = open(fileName, 'wb')
 			RESPONSE += (
 				f'Now ready to write to file: {escape_for_html(fileName)}'
+			)
+		except ValueError:
+			RESPONSE += (
+				f'Invalid file path: {escape_for_html(fileName)}'
 			)
 		except IOError as e:
 			RESPONSE += (
@@ -67,4 +79,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
