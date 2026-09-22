@@ -38,19 +38,13 @@ def init(app):
 		map29039['keyC'] = 'another-Value'
 		bar = map29039['keyB-29039']
 
-		import platform
 		import subprocess
 		import helpers.utils
 
-		argStr = ""
-		if platform.system() == "Windows":
-			argStr = "cmd.exe /c "
-		else:
-			argStr = "sh -c "
-		argStr += f"echo {bar}"
+		args = ["echo", bar]
 
 		try:
-			proc = subprocess.run(argStr, shell=True, capture_output=True, encoding="utf-8")
+			proc = subprocess.run(args, capture_output=True, encoding="utf-8")
 
 			RESPONSE += (
 				helpers.utils.commandOutput(proc)
@@ -61,4 +55,3 @@ def init(app):
 			)
 
 		return RESPONSE
-
