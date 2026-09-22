@@ -38,27 +38,6 @@ def init(app):
 		else:
 			bar = param
 
-		import platform
-		import subprocess
-		import helpers.utils
-
-		argStr = ""
-		if platform.system() == "Windows":
-			argStr = "cmd.exe /c "
-		else:
-			argStr = "sh -c "
-		argStr += f"echo {bar}"
-
-		try:
-			proc = subprocess.run(argStr, shell=True, capture_output=True, encoding="utf-8")
-
-			RESPONSE += (
-				helpers.utils.commandOutput(proc)
-			)
-		except IOError:
-			RESPONSE += (
-				"Problem executing cmdi - subprocess.run(list) Test Case"
-			)
+		RESPONSE += escape_for_html(bar)
 
 		return RESPONSE
-
