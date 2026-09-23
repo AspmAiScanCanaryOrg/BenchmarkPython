@@ -39,6 +39,7 @@ def init(app):
 
 		import helpers.utils
 
+		fd = None
 		try:
 			fileName = f'{helpers.utils.TESTFILES_DIR}/{bar}'
 			fd = open(fileName, 'wb')
@@ -58,4 +59,3 @@ def init(app):
 				pass # "// we tried..."
 
 		return RESPONSE
-
