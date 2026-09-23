@@ -44,23 +44,55 @@ def init(app):
 			bar = param
 
 		import secrets
+		import time
 		from helpers.utils import mysession
 
 		num = 'BenchmarkTest00629'[13:]
 		user = f'SafeRobbie{num}'
 		cookie = f'rememberMe{num}'
-		value = str(secrets.randbelow(2**32))
+		value = secrets.token_urlsafe(32)
+		client_key = (
+			cookie,
+			request.remote_addr or '',
+			request.headers.get('User-Agent', ''),
+		)
+		stored = mysession.get(client_key)
+		remembered = False
 
-		if cookie in mysession and request.cookies.get(cookie) == mysession[cookie]:
+		if isinstance(stored, dict):
+			stored_value = stored.get('value')
+			stored_expires_at = stored.get('expires_at')
+			request_cookie = request.cookies.get(cookie)
+			if (
+				isinstance(stored_value, str)
+				and isinstance(stored_expires_at, (int, float))
+				and isinstance(request_cookie, str)
+				and request_cookie == stored_value
+				and stored_expires_at > time.time()
+			):
+				remembered = True
+
+		if remembered:
 			RESPONSE += (
 				f'Welcome back: {user}<br/>'
 			)
+			resp = make_response(RESPONSE)
 		else:
-			mysession[cookie] = value
+			mysession[client_key] = {
+				'value': value,
+				'expires_at': time.time() + (60 * 60 * 24 * 30),
+			}
 			RESPONSE += (
-				f'{user} has been remembered with cookie:'
-				f'{cookie} whose value is: {mysession[cookie]}<br/>'
+				f'{user} has been remembered.<br/>'
+			)
+			resp = make_response(RESPONSE)
+			resp.set_cookie(
+				cookie,
+				value,
+				max_age=60 * 60 * 24 * 30,
+				httponly=True,
+				secure=request.is_secure,
+				samesite='Lax',
 			)
 
-		return RESPONSE
-
+		return resp
