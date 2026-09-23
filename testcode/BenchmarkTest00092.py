@@ -48,11 +48,10 @@ def init(app):
 				f'The beginning of file: \'{escape_for_html(str(p))}\' is:\n\n'
 				f'{escape_for_html(p.read_text()[:1000])}'
 			)
-		except OSError:
+		except OSError as e:
 			RESPONSE += (
-				f'Problem reading from file \'{{escape_for_html(fileName)}}\': '
-				f'{escape_for_html(e.strerror)}'
+				f'Problem reading from file \'{escape_for_html(str(p))}\': '
+				f'{escape_for_html(e.strerror or str(e))}'
 			)
 
 		return RESPONSE
-
