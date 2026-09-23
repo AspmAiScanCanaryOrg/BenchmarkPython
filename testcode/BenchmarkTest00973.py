@@ -43,7 +43,7 @@ def init(app):
 
 		bar = param
 
-		import hashlib, base64
+		import hashlib, base64, secrets
 		import io, helpers.utils
 
 		input = ''
@@ -58,16 +58,15 @@ def init(app):
 			)
 			return RESPONSE
 
-		hash = hashlib.new('md5')
-		hash.update(input)
-
-		result = hash.digest()
+		salt = secrets.token_bytes(16)
+		result = hashlib.scrypt(input, salt=salt, n=2**14, r=8, p=1)
 		f = open(f'{helpers.utils.TESTFILES_DIR}/passwordFile.txt', 'a')
-		f.write(f'hash_value={base64.b64encode(result)}\n')
+		f.write(
+			f'scrypt${base64.b64encode(salt).decode("ascii")}${base64.b64encode(result).decode("ascii")}\n'
+		)
 		RESPONSE += (
 			f'Sensitive value \'{helpers.utils.escape_for_html(input.decode('utf-8'))}\' hashed and stored.'
 		)
 		f.close()
 
 		return RESPONSE
-
