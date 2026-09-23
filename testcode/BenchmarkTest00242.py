@@ -40,13 +40,13 @@ def init(app):
 		else:
 			bar = param
 
-		import random
+		import secrets
 		from helpers.utils import mysession
 
 		num = 'BenchmarkTest00242'[13:]
 		user = f'SafeIsaac{num}'
 		cookie = f'rememberMe{num}'
-		value = str(random.SystemRandom().randint(0, 2**32))
+		value = secrets.token_urlsafe(32)
 
 		if cookie in mysession and request.cookies.get(cookie) == mysession[cookie]:
 			RESPONSE += (
@@ -60,4 +60,3 @@ def init(app):
 			)
 
 		return RESPONSE
-
