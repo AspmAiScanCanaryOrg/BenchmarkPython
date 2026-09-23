@@ -43,24 +43,45 @@ def init(app):
 		if param:
 			bar = param.split(' ')[0]
 
-		import random
+		import secrets
+		import time
 		from helpers.utils import mysession
 
 		num = 'BenchmarkTest00640'[13:]
 		user = f'SafeRandall{num}'
 		cookie = f'rememberMe{num}'
-		value = str(random.SystemRandom().random())[2:]
+		now = int(time.time())
+		record = mysession.get(cookie)
+		presented = request.cookies.get(cookie)
 
-		if cookie in mysession and request.cookies.get(cookie) == mysession[cookie]:
+		if (
+			isinstance(record, dict)
+			and record.get('token') == presented
+			and record.get('user') == user
+			and record.get('expires_at', 0) > now
+		):
 			RESPONSE += (
 				f'Welcome back: {user}<br/>'
 			)
+			response = make_response(RESPONSE)
 		else:
-			mysession[cookie] = value
+			value = secrets.token_urlsafe(32)
+			mysession[cookie] = {
+				'token': value,
+				'user': user,
+				'expires_at': now + 3600,
+			}
 			RESPONSE += (
-				f'{user} has been remembered with cookie: '
-				f'{cookie} whose value is: {mysession[cookie]}<br/>'
+				f'{user} has been remembered.<br/>'
+			)
+			response = make_response(RESPONSE)
+			response.set_cookie(
+				cookie,
+				value,
+				max_age=3600,
+				httponly=True,
+				secure=True,
+				samesite='Strict',
 			)
 
-		return RESPONSE
-
+		return response
