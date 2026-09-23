@@ -40,18 +40,19 @@ def init(app):
 		import helpers.utils
 
 		try:
-			testfiles = pathlib.Path(helpers.utils.TESTFILES_DIR)
-			p = testfiles / param
+			testfiles = pathlib.Path(helpers.utils.TESTFILES_DIR).resolve()
+			candidate = testfiles / param
+			p = candidate.resolve()
+			p.relative_to(testfiles)
 			RESPONSE += (
 				f'The beginning of file: \'{escape_for_html(str(p))}\' is:\n\n'
 				f'{escape_for_html(p.read_text()[:1000])}'
 			)
-		except OSError:
+		except (ValueError, OSError) as e:
 			RESPONSE += (
-				f'Problem reading from file \'{{escape_for_html(fileName)}}\': '
-				f'{escape_for_html(e.strerror)}'
+				f"Problem reading from file '{escape_for_html(param)}': "
+				f'{escape_for_html(e.strerror or str(e))}'
 			)
 
 		return RESPONSE
-
 
