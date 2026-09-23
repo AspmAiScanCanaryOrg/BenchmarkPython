@@ -44,10 +44,10 @@ def init(app):
 		conf85125.set('section85125', 'keyB-85125', param)
 		bar = conf85125.get('section85125', 'keyB-85125')
 
-		import hashlib, base64
+		import hashlib, base64, os
 		import io, helpers.utils
 
-		input = ''
+		input = b''
 		if isinstance(bar, str):
 			input = bar.encode('utf-8')
 		elif isinstance(bar, io.IOBase):
@@ -59,16 +59,15 @@ def init(app):
 			)
 			return RESPONSE
 
-		hash = hashlib.md5()
-		hash.update(input)
-
-		result = hash.digest()
+		salt = os.urandom(16)
+		result = hashlib.pbkdf2_hmac('sha256', input, salt, 310000)
 		f = open(f'{helpers.utils.TESTFILES_DIR}/passwordFile.txt', 'a')
-		f.write(f'hash_value={base64.b64encode(result)}\n')
+		f.write(
+			f'hash_value=pbkdf2_sha256${base64.b64encode(salt).decode("ascii")}${base64.b64encode(result).decode("ascii")}\n'
+		)
 		RESPONSE += (
 			f'Sensitive value \'{helpers.utils.escape_for_html(input.decode('utf-8'))}\' hashed and stored.'
 		)
 		f.close()
 
 		return RESPONSE
-
