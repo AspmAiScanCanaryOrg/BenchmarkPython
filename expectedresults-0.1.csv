@@ -975,7 +975,7 @@ BenchmarkTest00973,hash,true,328
 BenchmarkTest00974,hash,true,328
 BenchmarkTest00975,hash,true,328
 BenchmarkTest00976,hash,false,328
-BenchmarkTest00977,hash,true,328
+BenchmarkTest00977,hash,false,328
 BenchmarkTest00978,hash,true,328
 BenchmarkTest00979,hash,false,328
 BenchmarkTest00980,securecookie,true,614
