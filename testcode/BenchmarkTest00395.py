@@ -37,6 +37,7 @@ def init(app):
 		bar = param + '_SafeStuff'
 
 		import base64
+		import hmac
 		import secrets
 		from helpers.utils import mysession
 
@@ -45,7 +46,10 @@ def init(app):
 		cookie = f'rememberMe{num}'
 		value = secrets.token_urlsafe(32)
 
-		if cookie in mysession and request.cookies.get(cookie) == mysession[cookie]:
+		presented = request.cookies.get(cookie)
+		stored = mysession.get(cookie)
+
+		if stored is not None and presented is not None and hmac.compare_digest(presented, stored):
 			RESPONSE += (
 				f'Welcome back: {user}<br/>'
 			)
@@ -57,4 +61,3 @@ def init(app):
 			)
 
 		return RESPONSE
-
