@@ -15,6 +15,8 @@ PURPOSE. See the GNU General Public License for more details.
   Created: 2025
 '''
 
+import hmac
+
 from flask import redirect, url_for, request, make_response, render_template
 from helpers.utils import escape_for_html
 
@@ -46,7 +48,8 @@ def init(app):
 		cookie = f'rememberMe{num}'
 		value = str(base64.b64encode(random.randbytes(32)))
 
-		if cookie in mysession and request.cookies.get(cookie) == mysession[cookie]:
+		presented_cookie = request.cookies.get(cookie, "")
+		if cookie in mysession and hmac.compare_digest(presented_cookie, mysession[cookie]):
 			RESPONSE += (
 				f'Welcome back: {user}<br/>'
 			)
@@ -58,4 +61,3 @@ def init(app):
 			)
 
 		return RESPONSE
-
